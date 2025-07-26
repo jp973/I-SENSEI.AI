@@ -1,0 +1,10 @@
+openai
+streamlit==1.25.0
+nltk
+tiktoken
+faiss-cpu
+boto3
+pandas
+PyPDF2
+audio_recorder_streamlit
+streamlit-option-menu
