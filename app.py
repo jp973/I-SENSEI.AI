@@ -125,8 +125,8 @@ else:
     with st.sidebar:
         selected = option_menu(
             "I-Sensei.ai",
-            ["Home", "Technical Interview", "Resume Interview", "Behavioral Interview", "Feedback"],
-            icons=["house", "cpu", "file-earmark-person", "chat-dots", "bar-chart"],
+            ["Home", "Technical Interview", "Resume Interview", "Behavioral Interview", "Feedback","Share Experience"],
+            icons=["house", "cpu", "file-earmark-person", "chat-dots", "bar-chart","chat-left-text"],
             menu_icon="robot",
             default_index=0,
         )
@@ -137,11 +137,6 @@ else:
             st.session_state.logged_in = False
             st.success("Logged out successfully.")
             st.experimental_rerun()
-
-    if st.session_state.get("show_experience_form", False):
-        render()
-        st.stop()
-
    
    
     if selected == "Home":
@@ -164,6 +159,8 @@ else:
         from frontend.pages import feedback
         feedback.render()
        
+    elif selected == "Share Experience":
+        render()
 
 
     

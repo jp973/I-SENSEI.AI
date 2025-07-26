@@ -21,7 +21,7 @@ def render():
     name = st.text_input("Your Name", key="experience_name").strip()
     mobile = st.text_input("Mobile Number", key="experience_mobile").strip()
     experience = st.text_area("Share Your Experience", key="experience_text").strip()
-    
+
     if st.button("Send"):
         # Validation logic
         if not name:
@@ -35,9 +35,8 @@ def render():
         else:
             save_experience_to_db(name, mobile, experience)
             st.success("✅ Thank you for sharing your experience!")
-    
+
             # Reset form state
             st.session_state["experience_form_submitted"] = True
-            st.session_state["show_experience_form"] = False
+            # st.session_state["show_experience_form"] = False
             st.experimental_rerun()
-    

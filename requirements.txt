@@ -8,3 +8,5 @@ pandas
 PyPDF2
 audio_recorder_streamlit
 streamlit-option-menu
+bcrypt
+
