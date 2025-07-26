@@ -24,15 +24,23 @@ def render():
     # If interview not started
     if not st.session_state.tech_started:
         st.subheader("📄 Enter Job Description")
-        job_desc = st.text_area("Paste the job description here", height=200, key="tech_job_description")
+        # job_desc = st.text_area("Paste the job description here", height=200, key="tech_job_description")
+        job_desc = st.text_area("Paste the job description here", height=200)
+
 
         st.subheader("🎙️ Select Interview Mode")
         st.session_state.tech_mode = st.radio("Choose mode", ["Text-Based", "Voice-Based"], horizontal=True)
 
         if st.button("🚀 Start Interview"):
+            st.session_state.tech_job_description = job_desc
+
             if job_desc.strip():
                 pool = generate_question_pool(job_desc)
-                questions = get_random_questions(pool, 10)
+                if st.session_state.tech_mode == "Voice-Based":
+                    # Only one question for voice-based mode
+                    questions = get_random_questions(pool, 1)
+                else:
+                    questions = get_random_questions(pool, 10)
                 st.session_state.tech_questions = questions
                 st.session_state.tech_answers = []
                 st.session_state.tech_current = 0
@@ -65,35 +73,47 @@ def render():
                     st.warning("Please provide an answer before proceeding.")
 
         elif mode == "Voice-Based":
+            # Enforce only 1 question in Voice-Based mode
+            if mode == "Voice-Based" and index > 0:
+                st.success("✅ Voice-based interview supports only one question.")
+                st.markdown("👉 Please go to the **Feedback** tab to view your AI-generated feedback.")
+                return
+
             st.info("🔊 Playing question audio...")
             audio_path = question_to_speech(questions[index])
             st.audio(audio_path, format="audio/mp3")
 
             st.info("🎤 Record your answer")
-            audio_bytes = audio_recorder()
+            audio_bytes = audio_recorder(key=f"voice_q{index}")  # Unique key per question
 
             if audio_bytes:
-                audio_file_path = f"tech_user_q{index+1}.wav"
-                with open(audio_file_path, "wb") as f:
-                    f.write(audio_bytes)
-
                 st.audio(audio_bytes, format="audio/wav")
-                st.success("🎧 Audio recorded. Transcribing...")
+                st.success("🎧 Audio recorded. Click below to transcribe and proceed.")
 
-                try:
-                    answer = speech_to_text(audio_file_path)
-                    st.markdown(f"📝 **Transcribed Answer**: `{answer}`")
+                if st.button("Next", key=f"next_btn_{index}") and audio_bytes:
+                    # Save recorded file temporarily
+                    audio_file_path = f"tech_user_q{index+1}.wav"
+                    with open(audio_file_path, "wb") as f:
+                        f.write(audio_bytes)
 
-                    st.session_state.tech_answers.append({
-                        "question": questions[index],
-                        "answer": answer
-                    })
-                    st.session_state.tech_current += 1
-                    st.experimental_rerun()
+                    try:
+                        answer = speech_to_text(audio_file_path)
+                        st.markdown(f"📝 **Transcribed Answer**: `{answer}`")
 
-                except Exception as e:
-                    st.error("❌ Transcription failed.")
-                    st.exception(e)
+                        # Save Q&A
+                        st.session_state.tech_answers.append({
+                            "question": questions[index],
+                            "answer": answer
+                        })
+                        st.session_state.tech_current += 1
+                        st.experimental_rerun()
+
+                    except Exception as e:
+                        st.error("❌ Transcription failed.")
+                        st.exception(e)
+            else:
+                st.warning("Please record your voice answer before clicking Next.")
+
     else:
         st.success("✅ Interview Completed!")
         st.markdown("👉 Please go to the **Feedback** tab to view your AI-generated feedback.")

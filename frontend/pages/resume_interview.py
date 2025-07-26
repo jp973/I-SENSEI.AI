@@ -110,54 +110,101 @@ def render():
                     else:
                         st.warning("⚠️ Please enter your answer before submitting.")
 
-            elif mode == "Voice-Based":
+            # elif mode == "Voice-Based":
                 
 
-                # 🔊 1. Convert current question to voice
+            #     # 🔊 1. Convert current question to voice
+            #     st.info("🔊 Playing interview question...")
+            #     audio_path = question_to_speech(st.session_state.current_question)
+            #     st.audio(audio_path, format="audio/mp3")
+
+            #     # 🎙️ 2. Record user response
+            #     st.info("🎤 Record your answer")
+            #     audio_bytes = audio_recorder()
+
+            #     if audio_bytes:
+            #         # Save user audio
+            #         audio_file_path = os.path.join("user_audio.wav")
+            #         with open(audio_file_path, "wb") as f:
+            #             f.write(audio_bytes)
+
+            #         st.audio(audio_bytes, format="audio/wav")
+            #         st.success("🎧 Audio recorded. Transcribing...")
+
+            #         # 🔤 3. Transcribe to text
+            #         try:
+            #             user_answer = speech_to_text(audio_file_path)
+            #             st.write(f"📝 Transcribed Answer: `{user_answer}`")
+
+            #             # Save Q&A
+            #             st.session_state.conversation_history.append({
+            #                 "question": st.session_state.current_question,
+            #                 "answer": user_answer
+            #             })
+            #             st.session_state.question_count += 1
+
+            #             # Next question or finish
+            #             if st.session_state.question_count < 3:
+            #                 st.session_state.current_question = generate_resume_question(
+            #                     st.session_state.resume_text,
+            #                     st.session_state.conversation_history
+            #                 )
+            #             else:
+            #                 st.session_state.current_question = None
+            #             st.experimental_rerun()
+
+            #         except Exception as e:
+            #             st.error("❌ Failed to transcribe audio.")
+            #             st.exception(e)
+            elif mode == "Voice-Based":
                 st.info("🔊 Playing interview question...")
                 audio_path = question_to_speech(st.session_state.current_question)
                 st.audio(audio_path, format="audio/mp3")
-
-                # 🎙️ 2. Record user response
+            
                 st.info("🎤 Record your answer")
-                audio_bytes = audio_recorder()
-
-                if audio_bytes:
-                    # Save user audio
-                    audio_file_path = os.path.join("user_audio.wav")
+                audio_bytes = audio_recorder(key=f"resume_voice_q{st.session_state.question_count}")
+            
+                if audio_bytes and len(audio_bytes) > 1000:
+                    import tempfile
+                    audio_file_path = os.path.join(tempfile.gettempdir(), f"resume_user_q{st.session_state.question_count+1}.wav")
                     with open(audio_file_path, "wb") as f:
                         f.write(audio_bytes)
-
+            
                     st.audio(audio_bytes, format="audio/wav")
                     st.success("🎧 Audio recorded. Transcribing...")
-
-                    # 🔤 3. Transcribe to text
+            
                     try:
                         user_answer = speech_to_text(audio_file_path)
-                        st.write(f"📝 Transcribed Answer: `{user_answer}`")
-
-                        # Save Q&A
+                        st.write(f"📝 **Transcribed Answer:** `{user_answer}`")
+            
+                        # Save Q&A to history
                         st.session_state.conversation_history.append({
                             "question": st.session_state.current_question,
                             "answer": user_answer
                         })
+            
+                        # Update question count
                         st.session_state.question_count += 1
-
-                        # Next question or finish
+            
+                        # If less than 3, generate next question
                         if st.session_state.question_count < 3:
                             st.session_state.current_question = generate_resume_question(
                                 st.session_state.resume_text,
                                 st.session_state.conversation_history
                             )
                         else:
-                            st.session_state.current_question = None
+                            st.session_state.current_question = None  # End of interview
+            
                         st.experimental_rerun()
-
+            
                     except Exception as e:
-                        st.error("❌ Failed to transcribe audio.")
+                        st.error("❌ Transcription failed.")
                         st.exception(e)
-
-
+            
+                else:
+                    st.warning("⚠️ Please record a longer answer before clicking Next.")
+            
+            
         else:
             # After 3 questions
             st.success("✅ Interview Completed!")
