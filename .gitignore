@@ -9,3 +9,5 @@ __pycache__/
 *.zip
 *.pkl
 venv
+data\Questions.xlsx
+data\~$Questions.xlsx
