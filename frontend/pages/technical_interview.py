@@ -40,7 +40,7 @@ def render():
                     # Only one question for voice-based mode
                     questions = get_random_questions(pool, 1)
                 else:
-                    questions = get_random_questions(pool, 10)
+                    questions = get_random_questions(pool, 3)
                 st.session_state.tech_questions = questions
                 st.session_state.tech_answers = []
                 st.session_state.tech_current = 0

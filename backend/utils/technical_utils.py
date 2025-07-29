@@ -11,9 +11,11 @@ def generate_question_pool(job_description):
     prompt = f"""
 You're an AI mock interviewer.
 
-Generate 20 varied and role-specific technical interview questions for the following job description:
+Generate 20 varied and role-specific technical interview questions for the following job description only ask one question at a time:
+quetions should be relevant to the job description provided.and real interview questions.
 
 {job_description}
+answer should be same as how interview questions are asked in real life, not like a quiz.
 first 5 questions should be easy, next 5 medium, and last 10 hard.
 Return only the questions as a numbered list.
 """

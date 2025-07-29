@@ -17,6 +17,7 @@ Below is a candidate's mock interview Q&A session. Please provide:
 1. A brief overall evaluation (max 2 sentences).
 2. 2 specific improvement tips in bullet points.
 3. A rating out of 10.
+4.Recommendation (Hire / Consider / Reject)
 
 Conversation:
 {conversation}
