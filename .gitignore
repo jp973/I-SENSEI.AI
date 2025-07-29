@@ -8,3 +8,6 @@ __pycache__/
 *.log
 *.zip
 *.pkl
+venv
+data\Questions.xlsx
+data\~$Questions.xlsx
