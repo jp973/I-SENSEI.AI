@@ -7,6 +7,8 @@ import os
 from audio_recorder_streamlit import audio_recorder
 from backend.utils.voice_utils import question_to_speech, speech_to_text
 import tempfile
+from backend.utils.faiss_utils import add_to_index, is_similar
+
 
 load_dotenv()
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
@@ -16,8 +18,8 @@ genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 # -------------------------------
 def generate_resume_question(resume_text, prev_qas=[]):
     conversation = "\n".join([f"Q: {q['question']}\nA: {q['answer']}" for q in prev_qas])
-    prompt = f"""
-You are an AI interviewer. Ask a professional, relevant question based on the candidate's resume and past answers. Only ask one question at a time.
+    prompt_base = f"""
+You are an AI interviewer. Ask a professional, relevant question based on the candidate's resume and past answers. Only ask one question at a time.do not ask lengthy questions.make sure the question is unique and not similar to previous ones.
 
 Resume:
 {resume_text}
@@ -28,8 +30,19 @@ Conversation so far:
 Next Question:
 """
     model = genai.GenerativeModel("gemini-1.5-flash")
-    response = model.generate_content(prompt)
-    return response.text.strip()
+
+    # Try up to 5 times to get a unique (non-similar) question
+    for _ in range(5):
+        response = model.generate_content(prompt_base)
+        question = response.text.strip()
+
+        if not is_similar(question):  # Check against existing ones in FAISS
+            add_to_index(question)   # Store in vector index
+            return question
+
+    # If all were similar
+    return "⚠️ Unable to generate a new unique question. Please try again."
+
 
 # -------------------------------
 # UI Renderer
