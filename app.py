@@ -30,6 +30,11 @@ def authenticate(username, password):
     users = get_users_collection()
     user = users.find_one({"username": username})
     if user and bcrypt.checkpw(password.encode('utf-8'), user["password"]):
+        st.session_state.current_user = {
+            "username": user["username"],
+            "email": user["email"],
+            "mobile": user["mobile"]
+        }
         return True
     return False
 
@@ -139,9 +144,7 @@ if not st.session_state.logged_in:
 
 
 else:
-    # MAIN APP: This is your existing code (only show after login)
-
-    
+         
     from streamlit_option_menu import option_menu
 
     st.set_page_config(page_title="I-Sensei.ai", layout="centered")
