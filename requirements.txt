@@ -11,5 +11,8 @@ streamlit-option-menu
 bcrypt
 openai-whisper
 openpyxl
+faiss-cpu sentence-transformers
+google-generativeai
+
 
 

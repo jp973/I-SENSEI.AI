@@ -110,7 +110,7 @@ if not st.session_state.logged_in:
 
                     # Block after 5 attempts
                     if st.session_state.login_attempts >= 5:
-                        st.session_state.blocked_until = datetime.now() + timedelta(minutes=5)
+                        st.session_state.blocked_until = datetime.now() + timedelta(minutes=1)
                         st.error("🚫 Too many failed attempts. You are blocked for 5 minutes.")
 
     elif selected_tab == "Register":
