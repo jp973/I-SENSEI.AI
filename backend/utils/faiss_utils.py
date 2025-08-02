@@ -3,8 +3,7 @@ import faiss
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
-model = SentenceTransformer("all-MiniLM-L6-v2")  # lightweight and fast
-
+model = SentenceTransformer("D:/I-SENSEI.AI/models/all-MiniLM-L6-v2-local")
 # Global FAISS index (in-memory)
 index = faiss.IndexFlatL2(384)  # 384 = dimension of the MiniLM embedding
 stored_questions = []
