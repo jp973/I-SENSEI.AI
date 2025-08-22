@@ -1,12 +1,3 @@
-# app.py
-# ---------------------------------------------------
-# I-Sensei.ai — Streamlit main app (optimized)
-# - All imports at top (avoids re-import on rerun)
-# - DB collection cached with st.cache_resource
-# - Centralized session defaults
-# - Minimal reruns (only when view must switch)
-# - Page config set once at top
-# ---------------------------------------------------
 
 from datetime import datetime, timedelta
 import bcrypt
@@ -25,7 +16,6 @@ st.set_page_config(page_title="I-Sensei.ai", layout="centered")
 load_dotenv()
 
 
-# ---------- Utilities ----------
 def rerun():
     """Safe rerun for Streamlit versions with/without st.rerun."""
     try:
@@ -69,25 +59,22 @@ def authenticate(username: str, password: str) -> bool:
         return True
     return False
 
-
 def init_session_defaults():
     defaults = {
         "logged_in": False,
         "just_registered": False,
         "login_attempts": 0,
         "blocked_until": None,
-        "selected_tab": "Login",  # for login/register radio
-        "menu_selected": "Home",  # for sidebar option menu
+        "selected_tab": "Login",  
+        "menu_selected": "Home",  
     }
     for k, v in defaults.items():
         st.session_state.setdefault(k, v)
 
 
-# ---------- UI Sections ----------
 def show_login_register():
     st.title("🔐 Login to I-Sensei.ai")
 
-    # Auto-switch to Login right after registration success
     if st.session_state.just_registered:
         st.session_state.selected_tab = "Login"
 
@@ -117,7 +104,7 @@ def show_login_register():
                 st.session_state.login_attempts = 0
                 st.session_state.blocked_until = None
 
-            # Basic validation (kept identical)
+              
             if not username:
                 st.warning("⚠️ Username cannot be empty.")
             elif not password:
@@ -135,12 +122,11 @@ def show_login_register():
                     st.session_state.login_attempts += 1
                     st.error("❌ Invalid username or password.")
 
-                    # Block after 5 attempts (duration & message unchanged)
                     if st.session_state.login_attempts >= 5:
                         st.session_state.blocked_until = datetime.now() + timedelta(minutes=1)
                         st.error("🚫 Too many failed attempts. You are blocked for 5 minutes.")
 
-    else:  # Register
+    else:   
         st.subheader("Register")
         new_user = st.text_input("New Username").strip()
         new_pass = st.text_input("New Password", type="password")
@@ -148,7 +134,7 @@ def show_login_register():
         new_email = st.text_input("Email Address").strip()
 
         if st.button("Register"):
-            # Validation checks (kept identical)
+             
             if not new_user:
                 st.warning("⚠️ Username is required.")
             elif not new_pass:
@@ -162,13 +148,12 @@ def show_login_register():
             else:
                 if register(new_user, new_pass, new_mobile, new_email):
                     st.session_state.just_registered = True
-                    rerun()  # come back showing "Registered successfully!"
+                    rerun()  
                 else:
                     st.warning("❌ Username already exists.")
 
 
 def show_main_app():
-    # Sidebar
     with st.sidebar:
         selected = option_menu(
             "I-Sensei.ai",
@@ -184,9 +169,8 @@ def show_main_app():
         if st.button("🚪 Logout"):
             st.session_state.logged_in = False
             st.success("Logged out successfully.")
-            rerun()  # switch back to login/register
+            rerun() 
 
-    # Page routing (imports already at top)
     if st.session_state.menu_selected == "Home":
         home.render()
     elif st.session_state.menu_selected == "Technical Interview":
@@ -201,14 +185,12 @@ def show_main_app():
         render_experience()
 
 
-# ---------- App Entry ----------
 def main():
     init_session_defaults()
     if not st.session_state.logged_in:
         show_login_register()
     else:
         show_main_app()
-
 
 if __name__ == "__main__":
     main()
