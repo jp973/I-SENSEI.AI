@@ -4,13 +4,19 @@ from backend.utils.experience_utils import save_experience_to_db
 
 def render():
     st.title("💬 Share Your Experience with I-Sensei.ai")
+    st.markdown(
+        "<h4 style='text-align: center;'> Tell us how we can improve. We value your feedback! 😊</h4>",
+        unsafe_allow_html=True,
+    )
 
-    # If the form was just submitted and should reset
-    if st.session_state.get("experience_form_submitted", False):
-        st.session_state["experience_form_submitted"] = False
+    # --- Show success message if previous submission succeeded ---
+    if st.session_state.get("experience_success", False):
+        st.success("✅ Thank you for sharing your experience!")
+        # reset form fields after showing success
         st.session_state["experience_name"] = ""
         st.session_state["experience_mobile"] = ""
         st.session_state["experience_text"] = ""
+        st.session_state["experience_success"] = False  # reset flag
 
     # Set default values for fields if not already set
     st.session_state.setdefault("experience_name", "")
@@ -34,9 +40,5 @@ def render():
             st.warning("⚠️ Please share your experience.")
         else:
             save_experience_to_db(name, mobile, experience)
-            st.success("✅ Thank you for sharing your experience!")
-
-            # Reset form state
-            st.session_state["experience_form_submitted"] = True
-            # st.session_state["show_experience_form"] = False
+            st.session_state["experience_success"] = True  # set flag
             st.experimental_rerun()
