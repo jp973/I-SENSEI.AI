@@ -4,6 +4,7 @@ import bcrypt
 import streamlit as st
 from dotenv import load_dotenv
 from streamlit_option_menu import option_menu
+from streamlit_autorefresh import st_autorefresh
 
 # Local imports (moved to top to avoid repeated imports on rerun)
 from frontend.components.share_experience import render as render_experience
@@ -92,13 +93,15 @@ def show_login_register():
         username = st.text_input("Username").strip()
         password = st.text_input("Password", type="password")
 
+        if st.session_state.blocked_until and datetime.now() < st.session_state.blocked_until:
+            remaining = (st.session_state.blocked_until - datetime.now()).seconds
+            st.error(f"🚫 Too many failed attempts. Try again in {remaining} seconds.")
+            st_autorefresh(interval=1000, key="blocked_refresh")  # refresh every second
+            return
+
         if st.button("Login"):
             # If blocked, show remaining time
-            if st.session_state.blocked_until and datetime.now() < st.session_state.blocked_until:
-                remaining = (st.session_state.blocked_until - datetime.now()).seconds
-                st.error(f"🚫 Too many failed attempts. Try again in {remaining} seconds.")
-                st.stop()
-
+            
             # If previous block expired, reset counters
             if st.session_state.blocked_until and datetime.now() >= st.session_state.blocked_until:
                 st.session_state.login_attempts = 0
@@ -124,7 +127,7 @@ def show_login_register():
 
                     if st.session_state.login_attempts >= 5:
                         st.session_state.blocked_until = datetime.now() + timedelta(minutes=1)
-                        st.error("🚫 Too many failed attempts. You are blocked for 5 minutes.")
+                        st.error("🚫 Too many failed attempts. You are blocked for 1 minutes.")
 
     else:   
         st.subheader("Register")

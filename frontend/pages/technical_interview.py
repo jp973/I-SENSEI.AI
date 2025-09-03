@@ -43,7 +43,7 @@ def render():
                 st.session_state.tech_answers = []
                 st.session_state.tech_current = 0
                 st.session_state.tech_started = True
-                st.experimental_rerun()
+                st.rerun()
             else:
                 st.warning("Please provide a job description.")
         return
@@ -66,7 +66,7 @@ def render():
                         "answer": answer.strip()
                     })
                     st.session_state.tech_current += 1
-                    st.experimental_rerun()
+                    st.rerun()
                 else:
                     st.warning("Please provide an answer before proceeding.")
 
@@ -75,39 +75,39 @@ def render():
                 st.success("✅ Voice-based interview supports only one question.")
                 st.markdown("👉 Please go to the **Feedback** tab to view your AI-generated feedback.")
                 return
-
+        
             st.info("🔊 Playing question audio...")
             audio_path = question_to_speech(questions[index])
             st.audio(audio_path, format="audio/mp3")
-
+        
             st.info("🎤 Record your answer")
             audio_bytes = audio_recorder(key=f"voice_q{index}")
-
+        
             if audio_bytes:
                 st.audio(audio_bytes, format="audio/wav")
-                st.success("🎧 Audio recorded. Click below to transcribe and proceed.")
-
+                st.success("🎧 Audio recorded. Click **Next** to proceed.")
+        
+                # 🔹 Only transcribe & proceed when user clicks Next
                 if st.button("Next", key=f"next_btn_{index}"):
                     audio_file_path = f"tech_user_q{index+1}.wav"
                     with open(audio_file_path, "wb") as f:
                         f.write(audio_bytes)
-
+        
                     try:
                         answer = speech_to_text(audio_file_path)
-                        st.markdown(f"📝 **Transcribed Answer**: `{answer}`")
-
                         st.session_state.tech_answers.append({
                             "question": questions[index],
                             "answer": answer
                         })
                         st.session_state.tech_current += 1
-                        st.experimental_rerun()
-
+                        st.rerun()
                     except Exception as e:
                         st.error("❌ Transcription failed.")
                         st.exception(e)
             else:
-                st.warning("Please record your voice answer before clicking Next.")
+                st.warning("Please record your voice answer before clicking **Next**.")
+        
+
 
     else:
         # --- Interview completed ---
@@ -123,4 +123,4 @@ def render():
                 "tech_answers", "tech_job_description", "tech_mode", "tech_question_count"
             ]:
                 st.session_state.pop(key, None)
-            st.experimental_rerun()
+            st.rerun()

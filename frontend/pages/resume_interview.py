@@ -73,7 +73,7 @@ def render():
                 "resume_total_questions"
             ]:
                 st.session_state.pop(key, None)
-            st.experimental_rerun()
+            st.rerun()
         return
 
     # Resume upload
@@ -103,7 +103,7 @@ def render():
                     st.session_state.resume_text,
                     st.session_state.conversation_history
                 )
-                st.experimental_rerun()
+                st.rerun()
 
         elif st.session_state.question_count < st.session_state.resume_total_questions:
             st.markdown(f"**🧑‍💼 Question {st.session_state.question_count + 1}:**")
@@ -125,7 +125,7 @@ def render():
                             )
                         else:
                             st.session_state.current_question = None
-                        st.experimental_rerun()
+                        st.rerun()
                     else:
                         st.warning("⚠️ Please enter your answer before submitting.")
 
@@ -161,7 +161,7 @@ def render():
                         else:
                             st.session_state.current_question = None
 
-                        st.experimental_rerun()
+                        st.rerun()
                     except Exception as e:
                         st.error("❌ Transcription failed.")
                         st.exception(e)

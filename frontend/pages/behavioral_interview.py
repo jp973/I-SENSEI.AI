@@ -43,7 +43,7 @@ def render():
             for key in ["behav_started", "behav_mode", "behav_current", "behav_answers", "behav_selected_questions"]:
                 if key in st.session_state:
                     del st.session_state[key]
-            st.experimental_rerun()
+            st.rerun()
         return
 
     # Before interview starts
@@ -67,7 +67,7 @@ def render():
             random_selected = random.sample(remaining_questions, num_remaining) if num_remaining > 0 else []
             st.session_state.behav_selected_questions = [first_question] + random_selected
             st.session_state.behav_started = True
-            st.experimental_rerun()
+            st.rerun()
 
         return  # stop here if not started
 
@@ -87,7 +87,7 @@ def render():
                     "answer": answer.strip()
                 })
                 st.session_state.behav_current += 1
-                st.experimental_rerun()
+                st.rerun()
             else:
                 st.warning("⚠️ Please enter your answer before proceeding.")
 
@@ -116,7 +116,7 @@ def render():
                     "answer": answer
                 })
                 st.session_state.behav_current += 1
-                st.experimental_rerun()
+                st.rerun()
 
             except Exception as e:
                 st.error("❌ Transcription failed.")

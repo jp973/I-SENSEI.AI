@@ -56,6 +56,6 @@ def render():
                 st.warning("⚠️ User data not available.")
 
     with col1:
-        st.image("frontend/assets/AI.webp", use_column_width=True)
+        st.image("frontend/assets/AI.webp", use_container_width=True)
 
  
