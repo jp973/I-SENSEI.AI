@@ -41,4 +41,4 @@ def render():
         else:
             save_experience_to_db(name, mobile, experience)
             st.session_state["experience_success"] = True  # set flag
-            st.experimental_rerun()
+            st.rerun()
